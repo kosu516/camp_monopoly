@@ -1363,8 +1363,6 @@ router
         bankruptcyCount: teams[i].bankruptcyCount || 0,
         propertyCounts,
       });
-
-      await setTeamMoney(teams[i], teams[i].money + propertyValue, req.io);
     }
     accountingCount.value += 1;
     await accountingCount.save();

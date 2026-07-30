@@ -86,7 +86,7 @@ const Accounting = () => {
           variant="subtitle2"
           sx={{ color: "gray", marginTop: 1, textAlign: "center" }}
         >
-          Add 50% of each team's property value back to money.
+          Calculate final totals without changing money, resources, or properties.
         </Typography>
         <Button
           variant="contained"
@@ -118,7 +118,7 @@ const Accounting = () => {
             目前已經執行過 {accountingCount} 次 final accounting。
           </Typography>
           <Typography sx={{ marginBottom: 2 }}>
-            再次結算會再次把各小隊房地產價值的 50% 加回現金，且不會 reset 土地。
+            再次結算只會重新計算總和，不會改變現金、物資、房地產或土地狀態。
           </Typography>
           <FormControlLabel
             control={
