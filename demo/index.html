@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f3eb">
+    <meta name="description" content="台大電機營大富翁的互動展示。從購地、升級到期末結算，體驗小隊資產如何隨每筆交易變動。">
+    <title>營隊大富翁｜台大電機營互動展示</title>
+    <link rel="stylesheet" href="./demo.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#board">跳到地產地圖</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="wordmark" href="./" aria-label="2026 台大電機營，展示首頁">
+          <span class="wordmark-icon" aria-hidden="true">電</span>
+          <span><strong>NTUEE CAMP</strong><small>2026 · 台大電機營</small></span>
+        </a>
+        <nav aria-label="頁面導覽">
+          <a href="#settlement">資產結算</a>
+          <a class="source-link" href="https://github.com/kosu516/camp_monopoly">GitHub 原始碼</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow"><span class="status-dot"></span> 作品互動展示</p>
+          <h1 id="page-title">營隊大富翁</h1>
+          <p class="intro-copy">接手第一小隊，從購地到升級，看看每筆交易如何改變期末排名。</p>
+        </div>
+        <button class="button button-outline" id="reset" type="button">重設遊戲</button>
+      </section>
+
+      <section aria-label="第一小隊資產摘要">
+        <dl class="metrics">
+          <div><dt>現金餘額</dt><dd data-value="cash"></dd></div>
+          <div><dt>持有地產</dt><dd data-value="owned"></dd></div>
+          <div><dt>資源估值</dt><dd data-value="resources"></dd></div>
+          <div class="metric-total"><dt>結算總資產</dt><dd data-value="total"></dd></div>
+        </dl>
+      </section>
+
+      <div class="game-layout">
+        <section class="board-panel" id="board" aria-labelledby="board-title" tabindex="-1">
+          <header class="board-header">
+            <div>
+              <h2 id="board-title">地產地圖</h2>
+              <p>點選一格查看價格、租金與所有權。</p>
+            </div>
+            <ul class="legend" aria-label="地圖圖例">
+              <li><span class="legend-key available"></span>待購</li>
+              <li><span class="legend-key mine"></span>我方</li>
+              <li><span class="legend-key other"></span>他隊</li>
+            </ul>
+          </header>
+          <div class="board" id="tiles">
+            <div class="board-center">
+              <span class="board-center-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+              <strong>第一小隊</strong>
+              <span>從一塊地開始</span>
+            </div>
+          </div>
+          <noscript><p class="noscript">開啟 JavaScript 即可操作地圖與資產結算。</p></noscript>
+        </section>
+
+        <div class="sidebar">
+          <section class="paper detail" id="property-details" aria-label="選定地產">
+            <div class="detail-header">
+              <p class="eyebrow" id="property-zone"></p>
+              <span class="owner-chip" id="property-owner"></span>
+            </div>
+            <h2 id="property-title"></h2>
+            <p class="muted" id="property-description"></p>
+            <dl class="detail-values">
+              <div><dt id="property-price-label">購地成本</dt><dd id="property-price"></dd></div>
+              <div><dt id="property-rent-label">一級租金</dt><dd id="property-rent"></dd></div>
+            </dl>
+            <button class="button button-primary" id="property-action" type="button"></button>
+            <p class="result-note" id="result-note" role="status">選好第一塊地後，就能購買並升級。</p>
+          </section>
+
+          <section class="paper resources" aria-labelledby="resources-title">
+            <h2 id="resources-title">小隊資源</h2>
+            <dl class="resources-list">
+              <div><dt>贖罪券</dt><dd><span data-value="vouchers"></span> 張</dd></div>
+              <div><dt>EE 幣</dt><dd><span data-value="coins"></span> 枚</dd></div>
+            </dl>
+            <button id="exchange" class="button button-outline exchange" type="button"></button>
+            <p id="exchange-note" class="visually-hidden" role="status"></p>
+          </section>
+        </div>
+      </div>
+
+      <div class="records-layout" id="settlement">
+        <section class="paper records" aria-labelledby="settlement-title">
+          <h2 id="settlement-title">期末結算</h2>
+          <p class="muted">現金、資源估值與地產折算值加總後，依總資產排序。</p>
+          <dl class="settlement-values">
+            <div><dt>現金</dt><dd data-value="cash"></dd></div>
+            <div><dt>資源估值</dt><dd data-value="resources"></dd></div>
+            <div><dt>地產折算值</dt><dd data-value="propertyValue"></dd></div>
+          </dl>
+          <div class="table-scroll">
+            <table aria-label="小隊總資產排名">
+              <thead><tr><th scope="col">名次</th><th scope="col">小隊</th><th scope="col">總資產</th></tr></thead>
+              <tbody id="rankings"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="paper records" aria-labelledby="ledger-title">
+          <h2 id="ledger-title">交易紀錄</h2>
+          <p class="muted">查看第一小隊最近五筆交易。</p>
+          <ol id="ledger" class="ledger"></ol>
+          <p id="ledger-empty" class="empty">購地、升級或兌換資源後，交易會出現在這裡。</p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="shell site-footer">
+      <div>
+        <p><strong>2026 台大電機營</strong> · 互動展示</p>
+        <p>地圖、隊伍與資產皆為展示用範例。重新整理即可回到起始狀態。</p>
+      </div>
+      <a href="https://github.com/liftleaf1105/camp_monopoly#readme">原專案與歷屆作者</a>
+    </footer>
+  </body>
+</html>
