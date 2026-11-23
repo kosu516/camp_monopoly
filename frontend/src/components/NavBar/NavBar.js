@@ -14,11 +14,13 @@ import {
 import { NavBarItems, NPCItems, adminItems } from "./NavBarItem";
 import { NavBarStyles } from "./NavStyle";
 import RoleContext from "../useRole";
-import { isDemo, isDemoRoute } from "../../demo/mode";
+import { demoModes, isDemo, isDemoRoute } from "../../demo/mode";
 
 const Navbar = ({ open, onClose }) => {
   // const [navBarId, setNavBarId] = useState(0);
   const { role, roleId, setNavBarId, unreadCount } = useContext(RoleContext);
+  const title = isDemo ? demoModes.find((mode) => mode.role === role)?.label : role;
+  const showNpcTools = isDemo ? role === "NPC" : roleId > 20;
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const handleClick = (index, name) => {
@@ -61,11 +63,11 @@ const Navbar = ({ open, onClose }) => {
       onOpen={() => {}}
       onClose={onClose}
     >
-      <Toolbar align="center">{role}</Toolbar>
+      <Toolbar align="center">{title}</Toolbar>
       <Divider />
       <List>
         {NavBarItems.map(mapping)}
-        {roleId > 20 && (
+        {showNpcTools && (
           <>
             <Divider />
             <Typography sx={{ marginLeft: 3, marginTop: 2 }}>NPC</Typography>
@@ -75,7 +77,9 @@ const Navbar = ({ open, onClose }) => {
         {roleId === 100 && (
           <>
             <Divider />
-            <Typography sx={{ marginLeft: 3, marginTop: 2 }}>Admin</Typography>
+            <Typography sx={{ marginLeft: 3, marginTop: 2 }}>
+              {isDemo ? "Accounting Tools" : "Admin"}
+            </Typography>
             {adminItems.filter(({ route }) => !isDemo || isDemoRoute(route)).map(mapping)}
           </>
         )}

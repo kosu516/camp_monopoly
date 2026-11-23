@@ -1,6 +1,5 @@
 // import React from "react";
 import io from "socket.io-client";
-import { demoSocket } from "./demo/socket";
 import { isDemo } from "./demo/mode";
 // import { usedispatch } from "react-redux";
 
@@ -9,7 +8,7 @@ const defaultWSURL =
     ? window.location.origin
     : "http://localhost:2022";
 
-export const socket = isDemo ? demoSocket : io(process.env.REACT_APP_WS_URL || defaultWSURL);
+export const socket = isDemo ? { on() {}, off() {} } : io(process.env.REACT_APP_WS_URL || defaultWSURL);
 // export const SocketContext = React.createContext(socket);
 
 socket.on("connect", () => {

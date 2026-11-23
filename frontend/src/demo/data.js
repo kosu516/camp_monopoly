@@ -41,9 +41,7 @@ export function createDemoState() {
       { id: 0, name: "贖罪券", price: 600 },
       { id: 1, name: "EE幣", price: 200 },
     ],
-    broadcasts: [],
     transactions: [],
     latestResult: null,
-    gameBonus: 1,
   };
 }

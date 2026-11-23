@@ -12,8 +12,8 @@ This is the website of game "Monopoly" in NTUEE camp for high school student!
 [Play the GitHub Pages demo](https://kosu516.github.io/camp_monopoly/)
 
 The demo uses the camp's React interface with sample teams and browser-local
-game state. Open the **Demo** menu to switch views, buy or upgrade land, trade
-resources, run final accounting, or reset the sample data.
+game state. Use the **Demo** menu to switch between **Team Member**, **NPC**,
+and **Accountant**, view transaction history, or reset the sample data.
 
 To preview locally, run `cd frontend && yarn install --frozen-lockfile`, then
 `REACT_APP_DEMO=true yarn start`. For GitHub Pages, select **GitHub Actions** in

@@ -1,5 +1,4 @@
 import { createDemoState } from "./data";
-import { demoSocket } from "./socket";
 
 let state = createDemoState();
 
@@ -19,13 +18,13 @@ function fail(status, message) {
 
 function findById(items, id) {
   const item = items.find((entry) => entry.id === Number(id));
-  if (!item) fail(404, "找不到項目");
+  if (!item) fail(404, "Item not found");
   return item;
 }
 
 function track(team, description, change) {
   state.transactions = [
-    { teamname: team.teamname, description, change },
+    { teamname: `Team ${String(team.id).padStart(2, "0")}`, description, change },
     ...state.transactions,
   ].slice(0, 5);
 }
@@ -34,19 +33,22 @@ function purchase({ teamId, landId, mode }) {
   const team = findById(state.teams, teamId);
   const land = findById(state.lands, landId);
   if (land.type !== "Building" || !["Buy", "Upgrade"].includes(mode)) {
-    fail(400, "請選擇可交易的地產");
+    fail(400, "Select a tradable property");
   }
   const isBuy = mode === "Buy";
-  if (isBuy && land.owner !== 0) fail(409, "此地產已有持有人");
-  if (!isBuy && land.owner !== team.id) fail(409, "只有持有人可以升級");
-  if (!isBuy && land.level >= 3) fail(409, "地產已達最高等級");
+  if (isBuy && land.owner !== 0) fail(409, "This property already has an owner");
+  if (!isBuy && land.owner !== team.id) fail(409, "Only the owner can upgrade this property");
+  if (!isBuy && land.level >= 3) fail(409, "This property is already at the maximum level");
   const price = isBuy ? land.price.buy : land.price.upgrade;
-  if (team.money < price) fail(409, "現金不足");
+  if (team.money < price) fail(409, "Not enough cash");
 
   team.money -= price;
   land.owner = team.id;
   land.level += 1;
-  track(team, isBuy ? `購入${land.name}` : `${land.name}升為 ${land.level} 級`, -price);
+  const description = isBuy
+    ? `Purchased property ${land.id}`
+    : `Upgraded property ${land.id} to level ${land.level}`;
+  track(team, description, -price);
   return { money: team.money, land };
 }
 
@@ -65,21 +67,20 @@ function changeResources({ teamId, resourceId, number, mode }, trade) {
 
   team.resources[key] += change;
   team.money += cashChange;
-  const verb = trade ? (mode === 1 ? "買入" : "賣出") : (mode === 1 ? "增加" : "扣除");
-  track(team, `${verb} ${quantity} ${resource.name}`, cashChange);
+  const verb = trade ? (mode === 1 ? "Bought" : "Sold") : (mode === 1 ? "Added" : "Removed");
+  const label = resource.id === 0 ? "Redemption Vouchers" : "EE Coins";
+  track(team, `${verb} ${label} (${quantity})`, cashChange);
   return "Success";
 }
 
-function applyMoney({ id, dollar, gameBonus }, save) {
+function applyMoney({ id, dollar }, save) {
   const team = findById(state.teams, id);
   const amount = Number(dollar);
-  const change = Number.isFinite(amount)
-    ? Math.round(amount * (gameBonus && amount > 0 ? state.gameBonus : 1))
-    : 0;
+  const change = Number.isFinite(amount) ? Math.round(amount) : 0;
   const money = team.money + change;
   if (save) {
     team.money = money;
-    track(team, "調整現金", change);
+    track(team, "Adjusted cash", change);
   }
   return { money };
 }
@@ -116,22 +117,6 @@ function runAccounting() {
   return state.latestResult;
 }
 
-function postBroadcast({ title, description, level }) {
-  const message = { title, description, level, createdAt: Date.now() };
-  state.broadcasts = [message, ...state.broadcasts].slice(0, 20);
-  demoSocket.emit("broadcast", message);
-  return message;
-}
-
-function setGameBonus({ value }) {
-  const bonus = Number(value);
-  if (!Number.isFinite(bonus) || bonus < 0.1 || bonus > 10) {
-    fail(400, "Game bonus must be between 0.1 and 10");
-  }
-  state.gameBonus = bonus;
-  return { value: bonus };
-}
-
 const requests = {
   "get team": () => state.teams,
   "get team/:id": (_, id) => findById(state.teams, id),
@@ -145,19 +130,21 @@ const requests = {
   "get add": (data) => applyMoney(data, false),
   "post add": (data) => applyMoney(data, true),
   "post purchaseProperty": purchase,
-  "get event": () => ({ id: 0, title: "營隊大富翁展示版", description: "使用範例資料，點右上角 Demo 體驗不同操作。" }),
-  "get broadcast": () => state.broadcasts,
-  "post broadcast": postBroadcast,
+  "get event": () => ({
+    id: 0,
+    title: "Practice Round",
+    description: "Use the Demo menu to switch roles. Every mode uses sample data.",
+  }),
+  "get broadcast": () => [],
   "get accounting": getAccounting,
   "post accounting": runAccounting,
-  "get gameBonus": () => ({ value: state.gameBonus }),
-  "put gameBonus": setGameBonus,
+  "get gameBonus": () => ({ value: 1 }),
 };
 
 export async function demoAdapter(config) {
   const [endpoint, id] = config.url.replace(/^\//, "").split("/");
   const handle = requests[`${config.method} ${endpoint}${id ? "/:id" : ""}`];
-  if (!handle) fail(404, "此功能不在展示範圍內");
+  if (!handle) fail(404, "This feature is unavailable in the demo");
 
   const body = config.data ? JSON.parse(config.data) : config.params;
   const data = JSON.parse(JSON.stringify(handle(body, id)));

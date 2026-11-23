@@ -135,7 +135,7 @@ const Notifications = () => {
           >
             <CardContent>
               <Typography variant="h6">
-                事件：{eventMessage ? eventMessage.title : "無"}
+                {isDemo ? eventMessage.title || "No active event" : <>事件：{eventMessage.title}</>}
               </Typography>
               <Typography variant="body2">{eventMessage.description}</Typography>
               <Typography variant="body2">{eventMessage.note}</Typography>
@@ -152,7 +152,7 @@ const Notifications = () => {
               <Card>
                 <CardContent>
                   <Typography variant="body2" color="text.secondary">
-                    目前沒有卡片通知
+                    {isDemo ? "No card notifications yet." : "目前沒有卡片通知"}
                   </Typography>
                 </CardContent>
               </Card>

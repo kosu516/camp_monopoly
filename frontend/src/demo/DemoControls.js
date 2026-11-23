@@ -7,30 +7,23 @@ import {
 import RoleContext from "../components/useRole";
 import { roleIdMap } from "../components/Login";
 import { getDemoTransactions } from "./api";
-import { defaultDemoRole, demoRoleForRoute } from "./mode";
+import { demoModes } from "./mode";
 
-const views = [
-  { path: "/", label: "小隊首頁" },
-  { path: "/addmoney", label: "NPC · 購地與升級" },
-  { path: "/resources", label: "NPC · 資源交易" },
-  { path: "/accounting", label: "管理員 · 期末結算" },
-];
-const number = new Intl.NumberFormat("zh-TW", { signDisplay: "exceptZero" });
+const number = new Intl.NumberFormat("en-US", { signDisplay: "exceptZero" });
 
 export default function DemoControls() {
-  const { setRole, setRoleId, onDemoReset } = useContext(RoleContext);
+  const { role, setRole, setRoleId, onDemoReset } = useContext(RoleContext);
   const [anchor, setAnchor] = useState(null);
   const [transactions, setTransactions] = useState(null);
   const navigate = useNavigate();
 
   const close = () => setAnchor(null);
 
-  const openView = (path) => {
-    const role = demoRoleForRoute(path) || defaultDemoRole;
-    setRole(role);
-    setRoleId(roleIdMap[role]);
+  const openMode = ({ role: nextRole, home }) => {
+    setRole(nextRole);
+    setRoleId(roleIdMap[nextRole]);
     close();
-    navigate(path);
+    navigate(home);
   };
 
   return (
@@ -44,26 +37,34 @@ export default function DemoControls() {
         Demo
       </Button>
       <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={close}>
-        <ListSubheader>展示模式 · 範例資料</ListSubheader>
-        {views.map(({ path, label }) => (
-          <MenuItem key={path} onClick={() => openView(path)}>{label}</MenuItem>
+        <ListSubheader>Demo Modes</ListSubheader>
+        {demoModes.map((mode) => (
+          <MenuItem
+            key={mode.role}
+            role="menuitemradio"
+            aria-checked={role === mode.role}
+            selected={role === mode.role}
+            onClick={() => openMode(mode)}
+          >
+            {mode.label}
+          </MenuItem>
         ))}
         <Divider />
         <MenuItem onClick={() => {
           setTransactions(getDemoTransactions());
           close();
-        }}>交易紀錄</MenuItem>
+        }}>Transaction History</MenuItem>
         <MenuItem onClick={() => {
           close();
           navigate("/", { replace: true });
           onDemoReset();
-        }}>重設範例資料</MenuItem>
+        }}>Reset Sample Data</MenuItem>
         <MenuItem component="a" href="https://github.com/kosu516/camp_monopoly">
-          GitHub 原始碼
+          Source on GitHub
         </MenuItem>
       </Menu>
       <Dialog open={transactions !== null} onClose={() => setTransactions(null)} fullWidth maxWidth="xs">
-        <DialogTitle>最近五筆交易</DialogTitle>
+        <DialogTitle>Recent Transactions</DialogTitle>
         <DialogContent>
           {transactions?.length ? (
             <List disablePadding>
@@ -74,10 +75,10 @@ export default function DemoControls() {
                 </ListItem>
               ))}
             </List>
-          ) : <Typography>目前沒有交易紀錄。</Typography>}
+          ) : <Typography>No transactions yet.</Typography>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setTransactions(null)}>關閉</Button>
+          <Button onClick={() => setTransactions(null)}>Close</Button>
         </DialogActions>
       </Dialog>
     </>
