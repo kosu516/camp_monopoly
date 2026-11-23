@@ -30,7 +30,7 @@ const colors = {
 
 const PropertyCard = ({
   id,
-  ref,
+  cardRef,
   type,
   area,
   name,
@@ -114,7 +114,6 @@ const PropertyCard = ({
       setUpgrade(price.upgrade);
       setOpen(true);
     }
-    console.log(price.buy);
   };
   const handleClose = () => {
     setOpen(false);
@@ -126,7 +125,7 @@ const PropertyCard = ({
     <>
       {variant === "map" ? (
         <Box
-          ref={ref}
+          ref={cardRef}
           onClick={handleView}
           sx={{
             gridColumn,
@@ -200,7 +199,7 @@ const PropertyCard = ({
         elevation={2}
         key={id}
         id={id}
-        ref={ref}
+        ref={cardRef}
         sx={{
           borderLeft: 10,
           borderColor: colorData,

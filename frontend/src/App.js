@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "./components/axios";
 import Header from "./components/Header";
 import "./App.css";
-import { Route, Routes, BrowserRouter, useLocation } from "react-router-dom";
+import { Route, Routes, BrowserRouter, HashRouter, Navigate, useLocation } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { ThemeProvider } from "@mui/material/styles";
 import Home from "./components/Home";
@@ -40,28 +40,34 @@ import ResourcesView from "./components/Teams/ResourcesView";
 import StageDisplay from "./components/StageDisplay";
 import AccountingResult from "./components/admin/AccountingResult";
 import GameBonus from "./components/admin/GameBonus";
+import { resetDemo } from "./demo/api";
+import { defaultDemoRole, demoRoleForRoute, isDemo, isDemoRoute } from "./demo/mode";
 // import SetPrices from "./components/admin/Resources";
 // import Resource from "../../backend/models/resource";
 // // import { socket, SocketContext } from "./websocket";
 
-const App = () => {
-  const localRole = localStorage.getItem("role");
-  // console.log(localRole);
+const App = ({ onDemoReset }) => {
+  const location = useLocation();
+  const screenRole = isDemo ? demoRoleForRoute(location.pathname) : null;
   const [navBarId, setNavBarId] = useState(0);
-  const [role, setRole] = useState(localRole ? localRole : "");
-  const [roleId, setRoleId] = useState(localRole ? roleIdMap[role] : 0);
+  const [role, setRole] = useState(() => {
+    if (isDemo) return screenRole || defaultDemoRole;
+    return localStorage.getItem("role") || "";
+  });
+  const [roleId, setRoleId] = useState(() => roleIdMap[role] || 0);
   const [teams, setTeams] = useState([]);
   const [resources, setResources] = useState([]);
   const [phase, setPhase] = useState("");
   const [buildings, setBuildings] = useState([]);
   const [filteredBuildings, setFilteredBuildings] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const activeRole = screenRole || role;
   const value = {
     navBarId,
     setNavBarId,
-    role,
+    role: activeRole,
     setRole,
-    roleId,
+    roleId: screenRole ? roleIdMap[screenRole] : roleId,
     setRoleId,
     teams,
     setTeams,
@@ -75,14 +81,13 @@ const App = () => {
     setFilteredBuildings,
     unreadCount,
     setUnreadCount,
+    onDemoReset,
   };
-
-  const location = useLocation();
 
   // On login (or refresh while logged in), only major events count as unread.
   // Regular popups still show live, but they should not light up the badge.
   useEffect(() => {
-    if (role === "") {
+    if (activeRole === "") {
       setUnreadCount(0);
       return;
     }
@@ -98,7 +103,9 @@ const App = () => {
     };
     computeBaselineUnread();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role]);
+  }, [activeRole]);
+
+  if (isDemo && !isDemoRoute(location.pathname)) return <Navigate to="/" replace />;
 
   return (
     // <SocketContext.Provider value={socket}>
@@ -155,6 +162,19 @@ const App = () => {
   );
 };
 
-const Root = () => <BrowserRouter><App /></BrowserRouter>; // prettier-ignore
+const Root = () => {
+  const [revision, setRevision] = useState(0);
+  const Router = isDemo ? HashRouter : BrowserRouter;
+  const onDemoReset = () => {
+    resetDemo();
+    setRevision((version) => version + 1);
+  };
+
+  return (
+    <Router>
+      <App key={revision} onDemoReset={onDemoReset} />
+    </Router>
+  );
+};
 
 export default Root;

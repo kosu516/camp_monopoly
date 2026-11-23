@@ -16,6 +16,7 @@ import Loading from "./Loading";
 import axios from "./axios";
 import RoleContext from "./useRole";
 import { socket } from "../websocket";
+import { isDemo } from "../demo/mode";
 
 const Notifications = () => {
   const [eventMessage, setEventMessage] = useState({});
@@ -71,12 +72,14 @@ const Notifications = () => {
   };
 
   useEffect(() => {
-    const reloadCount = sessionStorage.getItem("reloadCount");
-    if (reloadCount < 1) {
-      sessionStorage.setItem("reloadCount", String(reloadCount + 1));
-      window.location.reload();
-    } else {
-      sessionStorage.removeItem("reloadCount");
+    if (!isDemo) {
+      const reloadCount = sessionStorage.getItem("reloadCount");
+      if (reloadCount < 1) {
+        sessionStorage.setItem("reloadCount", String(reloadCount + 1));
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem("reloadCount");
+      }
     }
 
     setUnreadCount(0);

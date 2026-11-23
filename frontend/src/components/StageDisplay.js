@@ -26,7 +26,7 @@ const STORAGE_KEY = "stageDisplaySelectedStage";
 
 const getStageLabel = (stage) => `Stage ${String(stage).padStart(2, "0")}`;
 const getImageSrc = (stage, extIndex) =>
-  `/stage-art/stage-${String(stage).padStart(2, "0")}.${
+  `${process.env.PUBLIC_URL}/stage-art/stage-${String(stage).padStart(2, "0")}.${
     IMAGE_EXTENSIONS[extIndex]
   }`;
 

@@ -43,7 +43,7 @@ const Properties = () => {
 
   useEffect(() => {
     const targetRef = refs[id];
-    if (!isNaN(id) && !scrolled && targetRef?.current) {
+    if (!isWide && !scrolled && targetRef?.current) {
       const position = targetRef.current.getBoundingClientRect().top;
       const offset = window.innerHeight / 2;
       window.scrollTo({
@@ -54,12 +54,7 @@ const Properties = () => {
       setScrolled(true);
       console.log("scrolled");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refs[id], scrolled]);
-
-  const cardComponents = buildings.map((item) =>
-    PropertyCard({ ...item, ref: refs[item.id] })
-  );
+  }, [buildings, id, isWide, refs, scrolled]);
 
   if (buildings.length === 0) {
     return <Loading />;
@@ -90,7 +85,9 @@ const Properties = () => {
               mx: "auto",
             }}
           >
-            {cardComponents}
+            {buildings.map((item) => (
+              <PropertyCard key={item.id} {...item} cardRef={refs[item.id]} />
+            ))}
           </Stack>
           <Box
             sx={{

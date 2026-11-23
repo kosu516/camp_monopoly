@@ -15,12 +15,12 @@ const Map = () => {
       >5
         
         <img
-          src="/B1.jpg"
+          src={`${process.env.PUBLIC_URL}/B1.jpg`}
           alt="Map"
           style={{ maxWidth: "100%", userSelect: "none" }}
         />
         <img
-          src="/2F.jpg"
+          src={`${process.env.PUBLIC_URL}/2F.jpg`}
           alt="Map"
           style={{ maxWidth: "100%", userSelect: "none" }}
         />

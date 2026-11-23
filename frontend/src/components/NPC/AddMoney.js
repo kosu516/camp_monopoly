@@ -50,6 +50,12 @@ const AddMoney = () => {
   const handleTeam = async (team) => {
     setPurchaseMode(null);
     setPurchaseError("");
+    if (team === -1) {
+      setTeam(-1);
+      setTeamData({});
+      setShowPreview(false);
+      return;
+    }
     if (amount !== "-" && amount !== "" && team !== -1) {
       setShowPreview(true);
     } else {
@@ -437,6 +443,7 @@ const AddMoney = () => {
             <Grid item xs={6}>
               <Box display="flex" flexDirection="row" justifyContent="center">
                 <Button
+                  aria-label="Submit money adjustment"
                   variant="contained"
                   disabled={team === -1 || amount === ""}
                   onClick={handleSubmit}
@@ -449,6 +456,7 @@ const AddMoney = () => {
             <Grid item xs={6}>
               <Box display="flex" flexDirection="row" justifyContent="center">
                 <Button
+                  aria-label="Submit property purchase or upgrade"
                   variant="contained"
                   disabled={!canPurchaseProperty}
                   onClick={handlePurchaseProperty}

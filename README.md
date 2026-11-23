@@ -11,14 +11,14 @@ This is the website of game "Monopoly" in NTUEE camp for high school student!
 
 [Play the GitHub Pages demo](https://kosu516.github.io/camp_monopoly/)
 
-The static demo uses sample teams and properties to show purchases, upgrades,
-resource exchange, and final accounting. It runs entirely in the browser.
+The demo uses the camp's React interface with sample teams and browser-local
+game state. Open the **Demo** menu to switch views, buy or upgrade land, trade
+resources, run final accounting, or reset the sample data.
 
-To preview it locally, run `python3 -m http.server 4173 --directory demo` from
-the repository root and open `http://localhost:4173`. For GitHub Pages, select
-**GitHub Actions** in **Settings → Pages** and run **Publish portfolio demo**.
-The workflow publishes just the `demo/` directory on pushes that change it on
-`main`.
+To preview locally, run `cd frontend && yarn install --frozen-lockfile`, then
+`REACT_APP_DEMO=true yarn start`. For GitHub Pages, select **GitHub Actions** in
+**Settings → Pages**. The **Publish portfolio demo** workflow builds the demo
+when the frontend changes on `main` and can also be run manually.
 
 ## Development
 ### Install packages

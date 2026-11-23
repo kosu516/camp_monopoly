@@ -21,7 +21,7 @@ const Home = () => {
     >
       <Box
         component="img"
-        src="/visual2026.jpg"
+        src={`${process.env.PUBLIC_URL}/visual2026.jpg`}
         alt="EE Camp 2026"
         sx={{
           maxWidth: "100%",

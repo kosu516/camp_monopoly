@@ -265,6 +265,7 @@ const Resources = () => {
                 sx={{ minWidth: 250, marginTop: 2 }}
               >
                 <Button
+                  aria-label="Submit resource trade"
                   variant="contained"
                   disabled={team === -1 || number === -1}
                   onClick={handleClick}

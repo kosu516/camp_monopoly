@@ -14,6 +14,7 @@ import {
 import { NavBarItems, NPCItems, adminItems } from "./NavBarItem";
 import { NavBarStyles } from "./NavStyle";
 import RoleContext from "../useRole";
+import { isDemo, isDemoRoute } from "../../demo/mode";
 
 const Navbar = ({ open, onClose }) => {
   // const [navBarId, setNavBarId] = useState(0);
@@ -68,14 +69,14 @@ const Navbar = ({ open, onClose }) => {
           <>
             <Divider />
             <Typography sx={{ marginLeft: 3, marginTop: 2 }}>NPC</Typography>
-            {NPCItems.map(mapping)}
+            {NPCItems.filter(({ route }) => !isDemo || isDemoRoute(route)).map(mapping)}
           </>
         )}
         {roleId === 100 && (
           <>
             <Divider />
             <Typography sx={{ marginLeft: 3, marginTop: 2 }}>Admin</Typography>
-            {adminItems.map(mapping)}
+            {adminItems.filter(({ route }) => !isDemo || isDemoRoute(route)).map(mapping)}
           </>
         )}
       </List>

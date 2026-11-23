@@ -8,6 +8,7 @@ import {
   Badge,
 } from "@mui/material";
 import RoleContext from "./useRole";
+import { isDemo, isDemoRoute } from "../demo/mode";
 
 const Footer = () => {
   const { role, unreadCount } = useContext(RoleContext);
@@ -24,9 +25,9 @@ const Footer = () => {
 
   useEffect(() => {
     if (role === "admin") {
-      setItems(adminItems);
+      setItems(isDemo ? adminItems.filter(({ route }) => isDemoRoute(route)) : adminItems);
     } else if (role === "NPC") {
-      setItems(NPCItems);
+      setItems(isDemo ? NPCItems.filter(({ route }) => isDemoRoute(route)) : NPCItems);
     } else {
       setItems(NavBarItems);
     }

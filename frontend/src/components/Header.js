@@ -13,6 +13,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NavBar from "./NavBar/NavBar";
 import RoleContext from "./useRole";
 import axios from "./axios";
+import DemoControls from "../demo/DemoControls";
+import { isDemo } from "../demo/mode";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -56,16 +58,13 @@ const Header = () => {
       .get("/land")
       .then((res) => {
         setBuildings(res.data);
+        setFilteredBuildings(res.data.filter(
+          ({ type }) => type === "Building" || type === "SpecialBuilding"
+        ));
       })
       .catch((error) => {
         console.error(error);
       });
-    setFilteredBuildings(
-      buildings.filter(
-        (building) =>
-          building.type === "Building" || building.type === "SpecialBuilding"
-      )
-    );
   };
 
   const getPhase = async () => {
@@ -99,19 +98,22 @@ const Header = () => {
       <AppBar position="fixed" sticky="top">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton
+            aria-label="Open navigation"
             onClick={handleChange}
           >
             <MenuIcon sx={{ color: "#fff" }} />
-            <NavBar open={open} onClose={handleCloseNav} />
           </IconButton>
+          <NavBar open={open} onClose={handleCloseNav} />
           <Typography variant="h1">MONOPOLY</Typography>
-          <Button
-            sx={{ display: pathname === "/login" && "none" }}
-            color="inherit"
-            onClick={role === "" ? handleLogin : handleLogout}
-          >
-            {role === "" ? "Login" : "Logout"}
-          </Button>
+          {isDemo ? <DemoControls /> : (
+            <Button
+              sx={{ display: pathname === "/login" && "none" }}
+              color="inherit"
+              onClick={role === "" ? handleLogin : handleLogout}
+            >
+              {role === "" ? "Login" : "Logout"}
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <Outlet />
